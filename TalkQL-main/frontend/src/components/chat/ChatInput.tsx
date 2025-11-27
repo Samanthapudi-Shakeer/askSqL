@@ -20,12 +20,12 @@ interface ChatInputProps {
     };
   
     return (
-        <div className="fixed bottom-6 left-0 right-0 px-24">
-        <form onSubmit={handleSubmit} className="max-w-[75rem] mx-auto">
-        <div className={`relative flex gap-3 backdrop-blur-lg rounded-full shadow-xl 
+        <div className="fixed bottom-6 left-0 right-0 px-6">
+        <form onSubmit={handleSubmit} className="max-w-5xl mx-auto">
+        <div className={`relative flex gap-3 backdrop-blur-xl rounded-2xl shadow-xl
             border p-3 hover:shadow-2xl transition-all duration-300
-            ${isLoading ? 'border-transparent' : 'border-gray-100/50'}
-            ${isLoading ? 'bg-white/70' : 'bg-white/80'}`}>
+            ${isLoading ? 'border-transparent' : 'border-gray-100/70'}
+            ${isLoading ? 'bg-white/80' : 'bg-white/90'}`}>
 
             
             {/* Animated glowing gradient */}
@@ -47,7 +47,7 @@ interface ChatInputProps {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Ask a question about your data..."
-              className="flex-1 bg-transparent border-none focus:outline-none text-gray-700 
+              className="flex-1 bg-transparent border-none focus:outline-none text-gray-700
                 placeholder-gray-400 rounded-full px-8 py-3 text-base"
             />
             <button

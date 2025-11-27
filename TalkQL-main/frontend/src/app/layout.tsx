@@ -8,8 +8,8 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "TalkQL - Database Connection Hub",
-  description: "Connect and query your databases with ease",
+  title: "aSQl - Conversational Database Studio",
+  description: "Connect, chat, and visualize your data with ease",
 };
 
 export default function RootLayout({

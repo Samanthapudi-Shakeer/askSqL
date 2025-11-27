@@ -24,7 +24,7 @@ viz_agent = VisualizationAgent()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Your frontend URL
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -164,7 +164,8 @@ async def add_database(
             db_type=db_type,
             **connection_params
         )
-        
+        sql_agent.get_db()
+
         return {"message": "Database connected successfully"}
     except Exception as e:
         logger.error(f"Error connecting to database: {str(e)}")
@@ -231,6 +232,8 @@ async def execute_query(query: Query):
             viz_result=viz_result if viz_result and viz_result.startswith('data:image') else None
         )
         
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error processing query: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))

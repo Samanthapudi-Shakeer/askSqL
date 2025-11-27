@@ -13,18 +13,18 @@ interface LogoProps {
       <div className={`transition-all duration-500 ${
         isTransitioning ? 'text-left' : 'text-center'
       }`}>
-        <h1 className={`font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 
-          ${minimal || isTransitioning ? 'text-2xl' : 'text-6xl'} 
+        <h1 className={`font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600
+          ${minimal || isTransitioning ? 'text-2xl' : 'text-6xl'}
           transition-all duration-500
           [text-shadow:_0_2px_10px_rgb(37_99_235_/_20%),_0_4px_20px_rgb(147_51_234_/_15%)]
           drop-shadow-sm`}
         >
-          TalkQL
+          aSQl
         </h1>
         {!minimal && !isTransitioning && (
           <p className="mt-2 font-medium bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500
             [text-shadow:_0_1px_5px_rgb(37_99_235_/_15%)]">
-            Data Answers, Simplified.
+            Conversational analytics, beautifully presented.
           </p>
         )}
       </div>
