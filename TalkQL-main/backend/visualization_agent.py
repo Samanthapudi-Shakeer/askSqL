@@ -1,5 +1,5 @@
 from langchain_experimental.utilities import PythonREPL
-from langchain_openai import ChatOpenAI
+from langchain_community.chat_models import ChatOllama
 from langgraph.graph import END, StateGraph, START
 from typing import Annotated, TypedDict
 from langchain_core.messages import AIMessage, HumanMessage
@@ -15,6 +15,7 @@ import matplotlib
 matplotlib.use('Agg')  # Set this before importing pyplot
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -30,7 +31,9 @@ class VisualizationAdvice(BaseModel):
 
 class VisualizationAgent:
     def __init__(self):
-        self.llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+        ollama_base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+        ollama_model = os.getenv("OLLAMA_MODEL", "qwen3:latest")
+        self.llm = ChatOllama(model=ollama_model, temperature=0, base_url=ollama_base_url)
         self.python_repl = PythonREPL()
     
     def create_python_code(self, state: State):

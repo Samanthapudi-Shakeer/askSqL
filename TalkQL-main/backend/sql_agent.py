@@ -1,13 +1,12 @@
 import os
 from dotenv import load_dotenv
-from langchain_openai import ChatOpenAI
+from langchain_community.chat_models import ChatOllama
 import requests
 from langchain_community.agent_toolkits import SQLDatabaseToolkit
 from langchain_core.tools import Tool
 from langchain_core.prompts import ChatPromptTemplate
 from typing import Annotated
 from langchain_core.messages import AIMessage, HumanMessage 
-from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
 from typing_extensions import TypedDict
 from langgraph.graph import END, StateGraph, START
@@ -19,7 +18,8 @@ import tempfile
 
 
 load_dotenv()
-openai_api_key = os.getenv("OPENAI_API_KEY")
+OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen3:latest")
 
 class Tables(BaseModel):
     tables: list[str] = Field(..., description="The list of tables")
@@ -42,7 +42,11 @@ class SubmitFinalAnswer(BaseModel):
 
 class SQLAgent:
     def __init__(self):
-        self.llm = ChatOpenAI(model="gpt-4o", temperature = 0)
+        self.llm = ChatOllama(
+            model=OLLAMA_MODEL,
+            temperature=0,
+            base_url=OLLAMA_BASE_URL
+        )
         self.db = None
         self.list_tables_tool = None
         self.get_schema_tool = None
