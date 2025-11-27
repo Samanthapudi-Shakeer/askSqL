@@ -7,7 +7,7 @@ from typing import Optional, Dict
 from fastapi.middleware.cors import CORSMiddleware  # Add this import
 import sqlite3
 import json
-from langchain_openai import ChatOpenAI
+from langchain_community.chat_models import ChatOllama
 import logging
 import pandas as pd
 import os
@@ -22,6 +22,9 @@ app = FastAPI()
 sql_agent = SQLAgent()
 viz_agent = VisualizationAgent()
 
+OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen3:latest")
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -29,7 +32,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+llm = ChatOllama(model=OLLAMA_MODEL, temperature=0, base_url=OLLAMA_BASE_URL)
 
 class DatabaseConnection(BaseModel):
     db_type: str
