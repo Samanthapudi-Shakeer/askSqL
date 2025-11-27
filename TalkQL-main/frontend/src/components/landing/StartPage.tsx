@@ -43,14 +43,14 @@ export const StartPage = ({ onStart, isExiting }: StartPageProps) => (
               <h1 className="text-9xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600
                 [text-shadow:_0_4px_20px_rgb(37_99_235_/_40%),_0_8px_40px_rgb(147_51_234_/_30%)]
                 drop-shadow-sm relative z-10">
-                TalkQL
+                aSQl
               </h1>
               <div className="absolute inset-0 bg-gradient-to-r from-blue-400/10 to-purple-400/10 blur-3xl transform scale-150" />
             </div>
             
             <p className="text-2xl font-medium bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500
               [text-shadow:_0_2px_10px_rgb(37_99_235_/_20%)] relative z-10">
-              Data Answers, Simplified.
+              Ask anything. See insights instantly.
             </p>
           </motion.div>
 

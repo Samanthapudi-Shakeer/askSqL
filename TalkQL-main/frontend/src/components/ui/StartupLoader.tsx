@@ -12,7 +12,7 @@ export const StartupLoader = ({ error }: StartupLoaderProps) => (
         <ServerIcon className="h-8 w-8 text-blue-600 animate-pulse" />
       </div>
     </div>
-    <h2 className="mt-6 text-xl font-medium text-gray-700">Starting up TalkQL</h2>
+    <h2 className="mt-6 text-xl font-medium text-gray-700">Starting up aSQl</h2>
     <p className="mt-2 text-sm text-gray-500">Checking for existing database connections...</p>
     {error && (
       <p className="mt-4 text-sm text-red-500">
