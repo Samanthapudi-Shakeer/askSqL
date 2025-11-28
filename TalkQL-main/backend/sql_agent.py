@@ -1,3 +1,4 @@
+import logging
 import os
 from dotenv import load_dotenv
 from langchain_community.chat_models import ChatOllama
@@ -6,7 +7,7 @@ from langchain_community.agent_toolkits import SQLDatabaseToolkit
 from langchain_core.tools import Tool
 from langchain_core.prompts import ChatPromptTemplate
 from typing import Annotated
-from langchain_core.messages import AIMessage, HumanMessage 
+from langchain_core.messages import AIMessage, HumanMessage
 from pydantic import BaseModel, Field
 from typing_extensions import TypedDict
 from langgraph.graph import END, StateGraph, START
@@ -20,6 +21,7 @@ import tempfile
 load_dotenv()
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen3:latest")
+logger = logging.getLogger(__name__)
 
 class Tables(BaseModel):
     tables: list[str] = Field(..., description="The list of tables")
@@ -77,6 +79,8 @@ class SQLAgent:
                     raise Exception(f"Failed to download the database. Status code: {response.status_code}")
             else:
                 db_path = connection_params.get("db_path", db_name)
+                if not os.path.exists(db_path):
+                    raise ValueError(f"SQLite database file not found at path: {db_path}")
                 self.db_uri = f"sqlite:///{db_path}"
         
         elif db_type.lower() == "mysql":
@@ -195,12 +199,10 @@ class SQLAgent:
         If error is returned, reqrite the query, check the query and try again.
         
         """
-        print("--------------------------------Executing db query tool--------------------------------")
-        print("--------------------------------")
-        print(query)
-        print("--------------------------------")
+        logger.info("--------------------------------Executing db query tool--------------------------------")
+        logger.info(query)
         result = self.db.run_no_throw(query)
-        print("--------------------------------DB query tool executed--------------------------------")
+        logger.info("--------------------------------DB query tool executed--------------------------------")
         # Format the result into a readable string
         if isinstance(result, str):
             return result
@@ -212,25 +214,29 @@ class SQLAgent:
         """
         List all the tables in the database.
         """
-        messages = state["messages"]
-        print(f"Messages in get all tables: {messages}")
-        print("--------------------------------Getting all tables--------------------------------")
-        all_tables = self.list_tables_tool.invoke("")
-        print(all_tables)
-        print("--------------------------------All tables retrieved--------------------------------")
-        return {"messages": state["messages"] + [AIMessage(content = f"{all_tables}")]}
+        logger.info("--------------------------------Getting all tables--------------------------------")
+        tables = self.db.get_usable_table_names()
+        if not tables:
+            raise ValueError("No tables found in the connected database. Please verify the database file.")
+
+        table_list = ", ".join(sorted(tables))
+        logger.info(f"Tables discovered: {table_list}")
+        return {"messages": state["messages"] + [AIMessage(content=table_list)]}
     
     def get_schema_for_all_tables(self, state: State):
         """
         Get the schema for all the tables
         """
-        print(f"Messages in get schema for all tables: {state['messages']}")
-        print("--------------------------------Getting schema for all tables--------------------------------")
-        print(state["messages"][-1].content)
-        relevant_tables_schema = self.get_schema_tool.invoke(state["messages"][-1].content)
-        print(relevant_tables_schema)
-        print("--------------------------------Schema for all tables retrieved--------------------------------")
-        return {"messages": state["messages"] + [AIMessage(content = f"{relevant_tables_schema}")]}
+        logger.info("--------------------------------Getting schema for all tables--------------------------------")
+        raw_tables = state["messages"][-1].content.strip()
+        tables = [name.strip() for name in raw_tables.split(",") if name.strip()]
+
+        if not tables:
+            raise ValueError("No valid table names were provided when requesting schema information.")
+
+        relevant_tables_schema = self.db.get_table_info(", ".join(tables))
+        logger.info("--------------------------------Schema for all tables retrieved--------------------------------")
+        return {"messages": state["messages"] + [AIMessage(content=f"{relevant_tables_schema}")]}
     
     def generate_query(self, state: State):
         """
