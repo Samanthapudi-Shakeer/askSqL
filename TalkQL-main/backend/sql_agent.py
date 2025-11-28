@@ -79,6 +79,8 @@ class SQLAgent:
                     raise Exception(f"Failed to download the database. Status code: {response.status_code}")
             else:
                 db_path = connection_params.get("db_path", db_name)
+                if not os.path.exists(db_path):
+                    raise ValueError(f"SQLite database file not found at path: {db_path}")
                 self.db_uri = f"sqlite:///{db_path}"
         
         elif db_type.lower() == "mysql":

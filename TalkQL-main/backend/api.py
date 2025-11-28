@@ -118,7 +118,7 @@ async def add_database(
                 os.makedirs("uploads", exist_ok=True)
                 file_path = f"uploads/{file.filename}"
                 content = await file.read()
-                
+
                 # Validate CSV content
                 try:
                     pd.read_csv(io.BytesIO(content))
@@ -127,11 +127,11 @@ async def add_database(
                         status_code=400,
                         detail=f"Invalid CSV file: {str(e)}"
                     )
-                
+
                 with open(file_path, "wb") as f:
                     f.write(content)
                 connection_params["file_path"] = file_path
-                
+
             elif "url" in connection_params:
                 # URL validation will be handled by sql_agent
                 pass
@@ -139,6 +139,22 @@ async def add_database(
                 raise HTTPException(
                     status_code=400,
                     detail="Either file or URL is required for CSV connection"
+                )
+        elif db_type == "sqlite":
+            if file:
+                os.makedirs("uploads", exist_ok=True)
+                filename = file.filename or "uploaded_database.db"
+                file_path = os.path.join("uploads", filename)
+
+                content = await file.read()
+                with open(file_path, "wb") as f:
+                    f.write(content)
+
+                connection_params["db_path"] = file_path
+            elif not connection_params.get("db_path") and not connection_params.get("url"):
+                raise HTTPException(
+                    status_code=400,
+                    detail="Either a SQLite file upload, db_path, or url is required for SQLite connection"
                 )
 
         # Rest of your connection code...
